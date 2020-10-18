@@ -1,0 +1,80 @@
+(mydjangoenv1) C:\Users\aprajita\django_projects\stackcbs>python manage.py sqlmigrate profiles 0001
+BEGIN;
+--
+-- Create model Profile
+--
+CREATE TABLE "profiles_profile" ("id" serial NOT NULL PRIMARY KEY, "first_name" varchar(200) NOT NULL, "last_name" varchar(200) NOT NULL, "bio" text NOT NULL, "email" varchar(300) NOT NULL, "country" varchar(200) NOT NULL, "avatar" varchar(100) NOT NULL, "slug" varchar(50) NOT NULL UNIQUE, "updated" timestamp with 
+time zone NOT NULL, "created" timestamp with time zone NOT NULL, "user_id" integer NOT NULL UNIQUE);
+CREATE TABLE "profiles_profile_friends" ("id" serial NOT NULL PRIMARY KEY, "profile_id" integer NOT NULL, "user_id" integer NOT NULL);
+ALTER TABLE "profiles_profile" ADD CONSTRAINT "profiles_profile_user_id_a3e81f91_fk_auth_user_id" FOREIGN KEY ("user_id") REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "profiles_profile_slug_552b86bf_like" ON "profiles_profile" ("slug" varchar_pattern_ops);
+ALTER TABLE "profiles_profile_friends" ADD CONSTRAINT "profiles_profile_friends_profile_id_user_id_b04f5799_uniq" UNIQUE ("profile_id", "user_id");
+ALTER TABLE "profiles_profile_friends" ADD CONSTRAINT "profiles_profile_fri_profile_id_1b1360a5_fk_profiles_" FOREIGN KEY ("profile_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "profiles_profile_friends" ADD CONSTRAINT "profiles_profile_friends_user_id_36beac75_fk_auth_user_id" FOREIGN KEY ("user_id") REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "profiles_profile_friends_profile_id_1b1360a5" ON "profiles_profile_friends" ("profile_id");
+CREATE INDEX "profiles_profile_friends_user_id_36beac75" ON "profiles_profile_friends" ("user_id");
+COMMIT;
+
+
+(mydjangoenv1) C:\Users\aprajita\django_projects\stackcbs>python manage.py sqlmigrate profiles 0002
+BEGIN;
+--
+-- Create model Relationship
+--
+CREATE TABLE "profiles_relationship" ("id" serial NOT NULL PRIMARY KEY, "status" varchar(8) NOT NULL, "updated" timestamp with time zone NOT NULL, "created" timestamp with time zone NOT NULL, "receiver_id" integer NOT NULL, "sender_id" integer NOT NULL);
+ALTER TABLE "profiles_relationship" ADD CONSTRAINT "profiles_relationshi_receiver_id_4cf7ca92_fk_profiles_" FOREIGN KEY ("receiver_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "profiles_relationship" ADD CONSTRAINT "profiles_relationship_sender_id_a2ce5bf6_fk_profiles_profile_id" FOREIGN KEY ("sender_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "profiles_relationship_receiver_id_4cf7ca92" ON "profiles_relationship" ("receiver_id");
+CREATE INDEX "profiles_relationship_sender_id_a2ce5bf6" ON "profiles_relationship" ("sender_id");
+COMMIT;
+
+(mydjangoenv1) C:\Users\aprajita\django_projects\stackcbs>python manage.py sqlmigrate posts 0001
+BEGIN;
+--
+-- Create model Post
+--
+CREATE TABLE "posts_post" ("id" serial NOT NULL PRIMARY KEY, "content" text NOT NULL, "image" varchar(100) NOT NULL, "updated" timestamp with time zone NOT NULL, "created" timestamp with time zone NOT NULL, "author_id" integer NOT NULL);
+CREATE TABLE "posts_post_liked" ("id" serial NOT NULL PRIMARY KEY, "post_id" integer NOT NULL, "profile_id" integer NOT NULL);
+--
+-- Create model Like
+--
+CREATE TABLE "posts_like" ("id" serial NOT NULL PRIMARY KEY, "value" varchar(8) NOT NULL, "updated" timestamp with time zone NOT NULL, "created" timestamp with time zone NOT NULL, "post_id" integer NOT NULL, "user_id" integer NOT NULL);
+--
+-- Create model Comment
+--
+CREATE TABLE "posts_comment" ("id" serial NOT NULL PRIMARY KEY, "body" text NOT NULL, "updated" timestamp with time zone NOT NULL, "created" timestamp with time zone NOT NULL, "post_id" integer NOT NULL, "user_id" integer NOT NULL);
+ALTER TABLE "posts_post" ADD CONSTRAINT "posts_post_author_id_fe5487bf_fk_profiles_profile_id" FOREIGN KEY ("author_id") REFERENCES "profiles_profile" ("id") 
+DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "posts_post_author_id_fe5487bf" ON "posts_post" ("author_id");
+ALTER TABLE "posts_post_liked" ADD CONSTRAINT "posts_post_liked_post_id_profile_id_89f8fa3f_uniq" UNIQUE ("post_id", "profile_id");
+ALTER TABLE "posts_post_liked" ADD CONSTRAINT "posts_post_liked_post_id_05d3558f_fk_posts_post_id" FOREIGN KEY ("post_id") REFERENCES "posts_post" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "posts_post_liked" ADD CONSTRAINT "posts_post_liked_profile_id_4928c055_fk_profiles_profile_id" FOREIGN KEY ("profile_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "posts_post_liked_post_id_05d3558f" ON "posts_post_liked" ("post_id");
+CREATE INDEX "posts_post_liked_profile_id_4928c055" ON "posts_post_liked" ("profile_id");
+ALTER TABLE "posts_like" ADD CONSTRAINT "posts_like_post_id_127195b7_fk_posts_post_id" FOREIGN KEY ("post_id") REFERENCES "posts_post" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "posts_like" ADD CONSTRAINT "posts_like_user_id_1d505823_fk_profiles_profile_id" FOREIGN KEY ("user_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "posts_like_post_id_127195b7" ON "posts_like" ("post_id");
+CREATE INDEX "posts_like_user_id_1d505823" ON "posts_like" ("user_id");
+ALTER TABLE "posts_comment" ADD CONSTRAINT "posts_comment_post_id_e81436d7_fk_posts_post_id" FOREIGN KEY ("post_id") REFERENCES "posts_post" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "posts_comment" ADD CONSTRAINT "posts_comment_user_id_ad949c47_fk_profiles_profile_id" FOREIGN KEY ("user_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "posts_comment_post_id_e81436d7" ON "posts_comment" ("post_id");
+CREATE INDEX "posts_comment_user_id_ad949c47" ON "posts_comment" ("user_id");
+COMMIT;
+
+(mydjangoenv1) C:\Users\aprajita\django_projects\stackcbs>python manage.py sqlmigrate posts 0002
+BEGIN;
+--
+-- Alter field liked on post
+--
+SET CONSTRAINTS "posts_post_liked_profile_id_4928c055_fk_profiles_profile_id" IMMEDIATE; ALTER TABLE "posts_post_liked" DROP CONSTRAINT "posts_post_liked_profile_id_4928c055_fk_profiles_profile_id";
+ALTER TABLE "posts_post_liked" ADD CONSTRAINT "posts_post_liked_profile_id_4928c055_fk_profiles_profile_id" FOREIGN KEY ("profile_id") REFERENCES "profiles_profile" ("id") DEFERRABLE INITIALLY DEFERRED;
+SET CONSTRAINTS "posts_post_liked_post_id_05d3558f_fk_posts_post_id" IMMEDIATE; ALTER TABLE "posts_post_liked" DROP CONSTRAINT "posts_post_liked_post_id_05d3558f_fk_posts_post_id";
+ALTER TABLE "posts_post_liked" ADD CONSTRAINT "posts_post_liked_post_id_05d3558f_fk_posts_post_id" FOREIGN KEY ("post_id") REFERENCES "posts_post" ("id") DEFERRABLE INITIALLY DEFERRED;
+COMMIT;
+
+(mydjangoenv1) C:\Users\aprajita\django_projects\stackcbs>python manage.py sqlmigrate posts 0003
+BEGIN;
+--
+-- Change Meta options on post
+--
+COMMIT;
