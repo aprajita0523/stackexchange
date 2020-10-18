@@ -1,0 +1,60 @@
+{% url 'home_view' as path_to_home %}
+{% url 'posts:main-post-view' as path_to_posts %}
+{% url 'profiles:my_profile_view' as path_to_profile %}
+<div class="ui inverted menu nav mb-7">
+    <div class="ui container">
+      <a href="{{path_to_home}}" class="{% if request.path == path_to_home %}active{% endif %} ui icon button teal item">
+          <h3>STACK EXCHANGE</h3>
+      </a>
+      {% if request.user.is_authenticated %}
+      <a href="{{path_to_posts}}" class="{% if request.path == path_to_posts %}active{% endif %} ui icon button teal item">
+          Possts
+      </a>
+      <a href="{{path_to_profile}}" class="{% if request.path == path_to_profile %}active{% endif %} ui icon button teal item">
+        My Profile
+    </a>
+      {% endif %}
+  
+      <div class="right menu">
+          {% if request.user.is_authenticated %}
+          <div class="item">
+              <div class="ui floating dropdown icon button teal"> Tags
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                      <a href="" class="item">
+                          All Profiles
+                      </a>
+                      <a href="" class="item">
+                          Send Invites
+                      </a>
+                      <a href="" class="item">
+                          Received Invites
+                      </a>
+                  </div>
+               </div>
+          </div>
+               <div class="item">
+                <form action="" method="GET">
+                  <div class="ui action left icon input">
+                  <input class="prompt" type="text" name='q' placeholder="Search using tags...">
+                  <i class="search icon"></i>
+                  <button type='submit' class="ui button">Search</button>
+                  </div>
+              </form>
+              </div>
+          
+              <a href="" class="item">
+                   {{ request.user }}
+              </a>
+  
+              <a href="" class="ui item">
+                  Logout
+              </a>
+          {% else %}
+          <a href="" class="ui item">
+                  Login
+              </a>
+          {% endif %}
+      </div>
+    </div>
+  </div>

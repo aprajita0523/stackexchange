@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+{% endblock title %}
+
+
+{% block content %}
+    <h3>hi hihihi</h3>
+    <div class="ui segment">
+    
+    <h3>Welcome  to your registration  page</h3>
+    <div class="ui grid">
+    <div class="row">
+        <div class='six wide column'>
+        
+            <div class="row mt-5">
+                <button class="ui secondary button" id="modal-btn" > NEW TO US !! SIGN IN HERE!!</button>
+            </div>
+        </div>
+        
+    </div>
+    </div>
+    </div>
+    
+    
+    <hr>
+    
+    <!---modal taken from UI Semantics-->
+    <div class="ui modal mymodal">
+        <i class="close icon"></i>
+        <div class="header">
+        </div>
+        <div class="image content">
+          <div class="ui medium image">
+            <img src="{{profile.avatar.url}}">
+          </div>
+        <div class="description">
+            <div class="ui header">please enter your username and password </div>
+            <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+    
+        <div class="actions">
+          <button type="submit" class="ui positive right labeled icon button">
+            SUBMIT
+            <i class="checkmark icon"></i>
+          </button>
+        </div>
+            </form>
+        </div>
+        </div>
+        </div>
+    
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+
